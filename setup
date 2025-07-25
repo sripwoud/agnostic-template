@@ -55,17 +55,21 @@ fi
 EOF
 
   chmod +x .git/hooks/smart-commit-editor
-  
+
   # Set this wrapper as the git editor
   git config --local core.editor ".git/hooks/smart-commit-editor"
-  
+
   # Ensure sequence.editor is set for rebase operations to bypass our wrapper
   default_editor=$(git config --global --get core.editor || echo "$EDITOR" || command -v nvim || command -v vim || command -v vi || command -v nano)
   if [ -n "$default_editor" ]; then
     git config --local sequence.editor "$default_editor"
   fi
-  
+
   echo "✅ Configured smart commit editor to use convco on main branch only"
+}
+
+custom() {
+  true
 }
 
 main() {
@@ -73,6 +77,9 @@ main() {
   mise install && log "✅ Installed dev tools and runtimes"
   use_convco_as_git_editor_only_on_main
   hk install && log "✅ Configured git hooks"
+  custom
+  log "🎉 Setup complete "
+  log "To see available tasks: ${ORANGE}mise run$RESET"
 }
 
 main
