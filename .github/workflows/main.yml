@@ -1,12 +1,11 @@
 name: main
 on:
-  # push trigger required to get coveralls monitoring of default branch
-  # pull_request required to get PR coveralls comments
   push:
     branches: [main]
   pull_request:
     branches: [main]
-
+permissions:
+  contents: read
 # no need to bother caching bun deps
 # https://github.com/oven-sh/setup-bun/issues/14#issuecomment-1714116221
 jobs:
