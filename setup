@@ -26,7 +26,7 @@ use_convco_as_git_editor_only_on_main() {
   # Create a wrapper script that decides which editor to use
   cat >.git/hooks/smart-commit-editor <<'EOF'
 #!/bin/sh
-# Smart editor wrapper that uses convco on main branch, normal editor otherwise
+# Smart editor wrapper that uses convco on default branch, normal editor otherwise
 
 # Check if we're in a rebase
 if [ -d "$(git rev-parse --git-dir)/rebase-merge" ] || [ -d "$(git rev-parse --git-dir)/rebase-apply" ]; then
@@ -35,17 +35,19 @@ if [ -d "$(git rev-parse --git-dir)/rebase-merge" ] || [ -d "$(git rev-parse --g
   exec $default_editor "$@"
 fi
 
+# Determine default branch
+default_branch=$(git config --get init.defaultBranch || echo "main")
+
 # Check current branch
 if ! git rev-parse HEAD >/dev/null 2>&1; then
-  # No commits yet, check the initial branch name
-  initial_branch=$(git config --get init.defaultBranch || echo "main")
-  current_branch=$(git symbolic-ref --short HEAD 2>/dev/null || echo "$initial_branch")
+  # No commits yet, use default branch name
+  current_branch=$(git symbolic-ref --short HEAD 2>/dev/null || echo "$default_branch")
 else
   current_branch=$(git rev-parse --abbrev-ref HEAD)
 fi
 
-if [ "$current_branch" = "main" ]; then
-  # Use convco on main branch
+if [ "$current_branch" = "$default_branch" ]; then
+  # Use convco on default branch
   exec convco commit "$@"
 else
   # Use normal editor on other branches
@@ -65,7 +67,7 @@ EOF
     git config --local sequence.editor "$default_editor"
   fi
 
-  echo "Configured smart commit editor to use convco on main branch only"
+  echo "Configured smart commit editor to use convco on default branch only"
 }
 
 main() {
