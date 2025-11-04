@@ -58,8 +58,8 @@ EOF
 
   chmod +x .git/hooks/smart-commit-editor
 
-  # Set this wrapper as the git editor
-  git config --local core.editor ".git/hooks/smart-commit-editor"
+  # Set this wrapper as the git editor (absolute path for worktree compatibility)
+  git config --local core.editor "$(realpath .git/hooks/smart-commit-editor)"
 
   # Ensure sequence.editor is set for rebase operations to bypass our wrapper
   default_editor=$(git config --global --get core.editor || echo "$EDITOR" || command -v nvim || command -v vim || command -v vi || command -v nano)
