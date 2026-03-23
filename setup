@@ -10,7 +10,7 @@ log() {
 }
 
 install_mise() {
-  curl https://mise.run | sh
+  curl -fsSL https://mise.run | sh
   echo "✅ Installed ${ORANGE}mise$RESET"
 }
 
