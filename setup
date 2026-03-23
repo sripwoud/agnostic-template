@@ -31,8 +31,8 @@ use_convco_as_git_editor_only_on_main() {
 # Check if we're in a rebase
 if [ -d "$(git rev-parse --git-dir)/rebase-merge" ] || [ -d "$(git rev-parse --git-dir)/rebase-apply" ]; then
   # In rebase, use normal editor
-  default_editor=$(git config --global --get core.editor || echo "$EDITOR" || command -v nvim || command -v vim || command -v vi || command -v nano)
-  exec $default_editor "$@"
+  default_editor=$(git config --global --get core.editor || { [ -n "${EDITOR:-}" ] && echo "${EDITOR:-}"; } || command -v nvim || command -v vim || command -v vi || command -v nano)
+  exec "$default_editor" "$@"
 fi
 
 # Determine default branch
@@ -51,8 +51,8 @@ if [ "$current_branch" = "$default_branch" ]; then
   exec convco commit "$@"
 else
   # Use normal editor on other branches
-  default_editor=$(git config --global --get core.editor || echo "$EDITOR" || command -v nvim || command -v vim || command -v vi || command -v nano)
-  exec $default_editor "$@"
+  default_editor=$(git config --global --get core.editor || { [ -n "${EDITOR:-}" ] && echo "${EDITOR:-}"; } || command -v nvim || command -v vim || command -v vi || command -v nano)
+  exec "$default_editor" "$@"
 fi
 EOF
 
@@ -62,7 +62,7 @@ EOF
   git config --local core.editor "$(realpath .git/hooks/smart-commit-editor)"
 
   # Ensure sequence.editor is set for rebase operations to bypass our wrapper
-  default_editor=$(git config --global --get core.editor || echo "$EDITOR" || command -v nvim || command -v vim || command -v vi || command -v nano)
+  default_editor=$(git config --global --get core.editor || { [ -n "${EDITOR:-}" ] && echo "${EDITOR:-}"; } || command -v nvim || command -v vim || command -v vi || command -v nano)
   if [ -n "$default_editor" ]; then
     git config --local sequence.editor "$default_editor"
   fi
